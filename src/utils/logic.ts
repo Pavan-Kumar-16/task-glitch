@@ -40,7 +40,7 @@ export function withDerived(task: Task): DerivedTask {
   let roi = computeROI(task.revenue, safeTime);
 
   if (!Number.isFinite(roi) || Number.isNaN(roi)) {
-    roi = null;
+    roi = 0;
   }
 
   return {
