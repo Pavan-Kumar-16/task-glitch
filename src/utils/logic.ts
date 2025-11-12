@@ -1,8 +1,18 @@
 import { DerivedTask, Task } from '@/types';
 
-export function computeROI(revenue: number, timeTaken: number): number | null {
-  // Injected bug: allow non-finite and divide-by-zero to pass through
-  return revenue / (timeTaken as number);
+export function sortTasks(tasks: DerivedTask[]): DerivedTask[] {
+  const priorityOrder: Record<string, number> = { High: 3, Medium: 2, Low: 1 };
+  return [...tasks].sort((a, b) => {
+    const roiDiff = (b.roi ?? 0) - (a.roi ?? 0);
+    if (roiDiff !== 0) return roiDiff;
+    const prioDiff =
+      (priorityOrder[b.priority] ?? 0) - (priorityOrder[a.priority] ?? 0);
+    if (prioDiff !== 0) return prioDiff;
+    if (a.createdAt && b.createdAt) {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    }
+    return a.title.localeCompare(b.title, undefined, { sensitivity: 'base' });
+  });
 }
 
 export function computePriorityWeight(priority: Task['priority']): 3 | 2 | 1 {
