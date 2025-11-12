@@ -27,12 +27,15 @@ export function computePriorityWeight(priority: Task['priority']): 3 | 2 | 1 {
 }
 
 export function withDerived(task: Task): DerivedTask {
+  const safeTime = Number(task.timeTaken) > 0 ? Number(task.timeTaken) : 1;
+  const roi = task.revenue / safeTime;
   return {
     ...task,
-    roi: computeROI(task.revenue, task.timeTaken),
-    priorityWeight: computePriorityWeight(task.priority),
+    roi: Number.isFinite(roi) && !Number.isNaN(roi) ? roi : 0,       
+    priorityWeight: computePriorityWeight(task.priority ?? 'Medium'), 
   };
 }
+
 
 export function sortTasks(tasks: ReadonlyArray<DerivedTask>): DerivedTask[] {
   return [...tasks].sort((a, b) => {
