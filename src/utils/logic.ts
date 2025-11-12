@@ -27,14 +27,19 @@ export function computePriorityWeight(priority: Task['priority']): 3 | 2 | 1 {
 }
 
 export function withDerived(task: Task): DerivedTask {
-  const safeTime = Number(task.timeTaken) > 0 ? Number(task.timeTaken) : 1;
-  const roi = task.revenue / safeTime;
+  const safeTime = task.timeTaken > 0 ? task.timeTaken : 1;
+  let roi = computeROI(task.revenue, safeTime);
+  if (!Number.isFinite(roi) || Number.isNaN(roi)) {
+    roi = null;
+  }
   return {
     ...task,
-    roi: Number.isFinite(roi) && !Number.isNaN(roi) ? roi : 0,       
-    priorityWeight: computePriorityWeight(task.priority ?? 'Medium'), 
+    timeTaken: safeTime,
+    roi,
+    priorityWeight: computePriorityWeight(task.priority),
   };
 }
+
 
 
 export function sortTasks(tasks: ReadonlyArray<DerivedTask>): DerivedTask[] {
