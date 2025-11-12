@@ -14,9 +14,10 @@ export interface Task {
 }
 
 export interface DerivedTask extends Task {
-  roi: number | null; // null means N/A
-  priorityWeight: 3 | 2 | 1;
+  roi: number | null;
+  priorityWeight: number;
 }
+
 
 export interface Metrics {
   totalRevenue: number;
