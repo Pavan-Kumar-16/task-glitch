@@ -17,10 +17,11 @@ import { Priority, Status, Task } from '@/types';
 interface Props {
   open: boolean;
   onClose: () => void;
-  onSubmit: (value: Omit<Task, 'id'> & { id?: string }) => void;
+  onSubmit: (value: Partial<Task> & { id?: string }) => void;
   existingTitles: string[];
   initial?: Task | null;
 }
+
 
 const priorities: Priority[] = ['High', 'Medium', 'Low'];
 const statuses: Status[] = ['Todo', 'In Progress', 'Done'];
