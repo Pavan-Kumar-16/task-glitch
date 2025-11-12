@@ -20,7 +20,6 @@ import {
 
 function AppContent() {
   const { loading, error, metrics, derivedSorted, addTask, updateTask, deleteTask, undoDelete, lastDeleted } = useTasksContext();
-  const { undoDelete, lastDeleted, clearLastDeleted } = useTasksContext();
   const handleCloseUndo = useCallback(() => {
   clearLastDeleted();  
   }, [clearLastDeleted]);
