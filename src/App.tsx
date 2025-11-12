@@ -51,14 +51,14 @@ function AppContent() {
   }, [derivedSorted, q, fStatus, fPriority]);
 
   // ✅ Fix #1: use Partial<Task> instead of Omit<Task, 'id'>
-  const handleAdd = useCallback(
-    (payload: Partial<Task> & { id?: string }) => {
-      addTask(payload);
-      if (payload.title)
-        setActivity(prev => [createActivity('add', `Added: ${payload.title}`), ...prev].slice(0, 50));
-    },
-    [addTask, createActivity]
-  );
+ const handleAdd = useCallback(
+  (payload: Partial<Task>) => {
+    addTask(payload as Omit<Task, 'id'>); // <-- Cast to satisfy type checker
+    setActivity(prev => [createActivity('add', `Added: ${payload.title}`), ...prev].slice(0, 50));
+  },
+  [addTask, createActivity]
+);
+
 
   const handleUpdate = useCallback(
     (id: string, patch: Partial<Task>) => {
