@@ -129,7 +129,10 @@ function AppContent() {
           {!loading && !error && <ChartsDashboard tasks={filtered} />}
           {!loading && !error && <AnalyticsDashboard tasks={filtered} />}
           {!loading && !error && <ActivityLog items={activity} />}
-          <UndoSnackbar open={!!lastDeleted} onClose={handleCloseUndo} onUndo={handleUndo} />
+          <UndoSnackbar
+            open={!!lastDeleted}
+            onClose={handleCloseUndo}
+            onUndo={handleUndo}/>
          </Stack>
       </Container>
     </Box>
