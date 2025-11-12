@@ -19,7 +19,8 @@ import {
 } from '@/utils/logic';
 
 function AppContent() {
-  const { loading, error, metrics, derivedSorted, addTask, updateTask, deleteTask, undoDelete, lastDeleted } = useTasksContext();
+  const { loading, error, metrics, derivedSorted, addTask, updateTask, deleteTask, undoDelete, lastDeleted } =
+    useTasksContext();
 
   const [q, setQ] = useState('');
   const [fStatus, setFStatus] = useState<string>('All');
@@ -49,10 +50,12 @@ function AppContent() {
     });
   }, [derivedSorted, q, fStatus, fPriority]);
 
+  // ✅ Fix #1: use Partial<Task> instead of Omit<Task, 'id'>
   const handleAdd = useCallback(
-    (payload: Omit<Task, 'id'>) => {
+    (payload: Partial<Task> & { id?: string }) => {
       addTask(payload);
-      setActivity(prev => [createActivity('add', `Added: ${payload.title}`), ...prev].slice(0, 50));
+      if (payload.title)
+        setActivity(prev => [createActivity('add', `Added: ${payload.title}`), ...prev].slice(0, 50));
     },
     [addTask, createActivity]
   );
@@ -78,9 +81,9 @@ function AppContent() {
     setActivity(prev => [createActivity('undo', 'Undo delete'), ...prev].slice(0, 50));
   }, [undoDelete, createActivity]);
 
-  // ✅ Replace the buggy clearLastDeleted with this:
+  // ✅ Fix #2: this was referencing a nonexistent `clearLastDeleted`
   const handleCloseUndo = useCallback(() => {
-    // no-op: just close snackbar; state is managed by undoDelete itself
+    // no operation — snackbar closes itself
   }, []);
 
   return (
@@ -115,6 +118,7 @@ function AppContent() {
               <CircularProgress />
             </Stack>
           )}
+
           {error && <Alert severity="error">{error}</Alert>}
 
           {!loading && !error && (
@@ -135,23 +139,14 @@ function AppContent() {
                 spacing={2}
                 alignItems={{ xs: 'stretch', sm: 'center' }}
               >
-                <TextField
-                  placeholder="Search by title"
-                  value={q}
-                  onChange={e => setQ(e.target.value)}
-                  fullWidth
-                />
+                <TextField placeholder="Search by title" value={q} onChange={e => setQ(e.target.value)} fullWidth />
                 <Select value={fStatus} onChange={e => setFStatus(e.target.value)} sx={{ minWidth: 180 }}>
                   <MenuItem value="All">All Statuses</MenuItem>
                   <MenuItem value="Todo">Todo</MenuItem>
                   <MenuItem value="In Progress">In Progress</MenuItem>
                   <MenuItem value="Done">Done</MenuItem>
                 </Select>
-                <Select
-                  value={fPriority}
-                  onChange={e => setFPriority(e.target.value)}
-                  sx={{ minWidth: 180 }}
-                >
+                <Select value={fPriority} onChange={e => setFPriority(e.target.value)} sx={{ minWidth: 180 }}>
                   <MenuItem value="All">All Priorities</MenuItem>
                   <MenuItem value="High">High</MenuItem>
                   <MenuItem value="Medium">Medium</MenuItem>
@@ -169,5 +164,15 @@ function AppContent() {
         </Stack>
       </Container>
     </Box>
+  );
+}
+
+export default function App() {
+  return (
+    <UserProvider>
+      <TasksProvider>
+        <AppContent />
+      </TasksProvider>
+    </UserProvider>
   );
 }
